@@ -12,12 +12,25 @@ cold_btn = Button(20)
 brightness = 50
 warmth = 50
 
+def printStripValues(warm, cold):
+    for strip in [warm, cold]:
+        slider = ""
+        for i in range(51):
+            if i/50 <= strip and (i+1)/50 > strip:
+                slider += "|"
+            else:
+                slider += "-"
+        print(slider, " ", round(strip*100, 1), "%", sep="")
+    print()
+        
+
 def update_brightness():
     b = pow(brightness/100, 2)
-    print("Brightness set to ", b*100, "%")
-    print("Warmth set to ", warmth, "%")
-    cold_led.value = b*(1-warmth/100)
-    warm_led.value = b*(warmth/100)
+    warm = b*(warmth/100)
+    cold = b*(1-warmth/100)
+    printStripValues(warm, cold)
+    warm_led.value = warm
+    cold_led.value = cold
 
 def increase():
     global brightness
