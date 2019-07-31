@@ -3,22 +3,29 @@ from gpiozero import Button
 from time import sleep
 from signal import pause
 
-led = PWMLED(15)
+cold_led = PWMLED(15)
+warm_led = PWMLED(14)
 plus_btn = Button(2)
 minus_btn = Button(3)
-brightness = 50;
+warm_btn = Button(21)
+cold_btn = Button(20)
+brightness = 50
+warmth = 50
 
 def update_brightness():
     b = pow(brightness/100, 2)
     print("Brightness set to ", b*100, "%")
-    if brightness == 100:
-        led.value = .3;
-        sleep(.1)
-    led.value = b
+    print("Warmth set to ", warmth, "%")
+    cold_led.value = b*(1-warmth/100)
+    warm_led.value = b*(warmth/100)
 
 def increase():
     global brightness
     brightness = min(brightness+5, 100)
+    if brightness == 100:
+        cold_led.value = .3;
+        warm_led.value = .3;
+        sleep(.1)
     update_brightness()
 
 def decrease():
@@ -26,9 +33,21 @@ def decrease():
     brightness = max(brightness-5, 0)
     update_brightness()
 
+def warmer():
+    global warmth
+    warmth = min(warmth+5, 100)
+    update_brightness()
+
+def colder():
+    global warmth
+    warmth = max(warmth-5, 0)
+    update_brightness()
+
 update_brightness()
 plus_btn.when_pressed = increase
 minus_btn.when_pressed = decrease
+warm_btn.when_pressed = warmer
+cold_btn.when_pressed = colder
 
 
 
